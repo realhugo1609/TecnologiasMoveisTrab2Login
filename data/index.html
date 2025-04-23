@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <body>
+
+    <fieldset style="display: inline-block">
+      <legend>Login</legend>
+      Login:<br>
+      <input type="text" size="10" id="meulogin"><br>
+      Senha:<br>
+      <input type="password" size="10" id="minhasenha"><br>
+  </fieldset>
+
+  <!--<p><a href="/on" onclick="verificaSenha()">Login</a> GPIO state: <strong> %STATE%</strong></p>-->
+  <br><br>
+  <a onclick="verificaSenha()">LOGIN</a>
+  <p id="status">Desconectado</p>
+  <p>GPIO state: <strong> %STATE%</strong></p>
+
+  </body>
+
+<script>
+
+function verificaSenha()
+{
+  //alert("atenção!");
+  if ((document.getElementById("meulogin").value == "hugo") && (document.getElementById("minhasenha").value == "1234")) //1234 eh a senha
+  {
+    window.location.href = "on"; 
+    document.getElementById("status").textContent = "Você está conectado";
+
+  }
+  else 
+  {
+    window.location.href = "off";
+    document.getElementById("status").textContent = "Login/Senha errada";
+  }
+}
+
+</script>
+
+</html>
