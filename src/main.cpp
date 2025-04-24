@@ -18,7 +18,7 @@
   - Select your ESP8266 in "Tools -> Board"
 */
 #define BUILTIN_LED 2
-#define LEONARDO
+
 #include <WiFi.h>
 #include <PubSubClient.h>
 
