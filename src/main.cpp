@@ -1,22 +1,3 @@
-/*
- Basic ESP8266 MQTT example
- This sketch demonstrates the capabilities of the pubsub library in combination
- with the ESP8266 board/library.
- It connects to an MQTT server then:
-  - publishes "hello world" to the topic "outTopic" every two seconds
-  - subscribes to the topic "inTopic", printing out any messages
-    it receives. NB - it assumes the received payloads are strings not binary
-  - If the first character of the topic "inTopic" is an 1, switch ON the ESP Led,
-    else switch it off
- It will reconnect to the server if the connection is lost using a blocking
- reconnect function. See the 'mqtt_reconnect_nonblocking' example for how to
- achieve the same result without blocking the main loop.
- To install the ESP8266 board, (using Arduino 1.6.4+):
-  - Add the following 3rd party board manager under "File -> Preferences -> Additional Boards Manager URLs":
-       http://arduino.esp8266.com/stable/package_esp8266com_index.json
-  - Open the "Tools -> Board -> Board Manager" and click install for the ESP8266"
-  - Select your ESP8266 in "Tools -> Board"
-*/
 #define BUILTIN_LED 2
 
 #include <WiFi.h>
@@ -25,10 +6,12 @@
 #include "ESPAsyncWebServer.h"
 #include "SPIFFS.h"
 
+
 // Update these with values suitable for your network.
 
-const char* ssid = "Leo";
-const char* password = "minhasenha";
+const char* ssid = "LEO308_2G";
+const char* password = "14393018";
+
 const char* mqtt_server = "broker.emqx.io";
 
 // Set LED GPIO
@@ -47,23 +30,6 @@ unsigned long lastMsg = 0;
 char msg[MSG_BUFFER_SIZE];
 int value = 0;
 
-/*
-// Replaces placeholder with LED state value
-String processor(const String& var){
-  Serial.println(var);
-  if(var == "STATE"){
-    if(digitalRead(ledPin)){
-      ledState = "ON";
-    }
-    else{
-      ledState = "OFF";
-    }
-    Serial.print(ledState);
-    return ledState;
-  }
-  return String();
-}
-*/
 String processor(const String& var)
 {
   Serial.println(var);
@@ -76,17 +42,17 @@ String processor(const String& var)
   return String();
 }
 
-void setup_wifi() {
+//void setup_wifi(const char* ssid, const char* password) {
+void setup_wifi(const String ssid, const String password) {
+
 
   delay(10);
   // We start by connecting to a WiFi network
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(ssid);
-
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
-
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
@@ -98,6 +64,7 @@ void setup_wifi() {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+  
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
@@ -147,9 +114,10 @@ void reconnect() {
 void setup() {
   pinMode(BUILTIN_LED, OUTPUT);     // Initialize the BUILTIN_LED pin as an output
   Serial.begin(115200);
-  setup_wifi();
-  client.setServer(mqtt_server, 1883);
-  client.setCallback(callback);
+  setup_wifi(ssid, password);
+
+  //client.setServer(mqtt_server, 1883);
+  //client.setCallback(callback);
 
 
   // Initialize SPIFFS
@@ -172,10 +140,22 @@ void setup() {
     digitalWrite(ledPin, HIGH); 
     AsyncWebParameter* l = request->getParam(0); //LOGIN
     AsyncWebParameter* s = request->getParam(1); //SENHA
+    /*
     if (((l->value() == "hugo") && (s->value() == "1234"))  ||
        ((l->value() == "mikael") && (s->value() == "2025")))  request->send(SPIFFS, "/sucessologin.html", String(), false, processor); 
     else request->send(SPIFFS, "/falhalogin.html", String(), false, processor); 
+    */
+   request->send(SPIFFS, "/index.html", String(), false, processor);
 
+    WiFi.disconnect();
+    while (WiFi.status() != WL_DISCONNECTED) 
+    {
+      delay(500);
+      Serial.print("d...");
+    }
+    Serial.println("Status:");
+    Serial.println(WiFi.status());
+    setup_wifi(l->value(), s->value());
 
   });
   // Route to set GPIO to LOW
@@ -191,6 +171,7 @@ void setup() {
 
 void loop() {
 
+/*
   if (!client.connected()) {
     reconnect();
   }
@@ -205,4 +186,5 @@ void loop() {
     Serial.println(msg);
     client.publish("outTopic", msg);
   }
+*/
 }
