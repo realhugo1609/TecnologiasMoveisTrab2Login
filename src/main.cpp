@@ -8,8 +8,16 @@
 
 // Update these with values suitable for your network.
 
-const char* ssid = "Leo";
-const char* password = "minhasenha";
+//const char* ssid = "Leo";
+//const char* password = "minhasenha";
+
+const char* ssid = "LEO308_2G";
+const char* password = "14393018";
+
+//ssid = "LEO308_2G";
+//password = "14393018";
+
+
 const char* mqtt_server = "broker.emqx.io";
 
 // Set LED GPIO
@@ -41,17 +49,15 @@ String processor(const String& var)
   return String();
 }
 
-void setup_wifi() {
+void setup_wifi(const char* ssid, const char* password) {
 
   delay(10);
   // We start by connecting to a WiFi network
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(ssid);
-
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
-
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
@@ -63,6 +69,7 @@ void setup_wifi() {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+  
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
@@ -112,7 +119,8 @@ void reconnect() {
 void setup() {
   pinMode(BUILTIN_LED, OUTPUT);     // Initialize the BUILTIN_LED pin as an output
   Serial.begin(115200);
-  setup_wifi();
+  setup_wifi(ssid, password);
+
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
 
@@ -140,6 +148,17 @@ void setup() {
     if (((l->value() == "hugo") && (s->value() == "1234"))  ||
        ((l->value() == "mikael") && (s->value() == "2025")))  request->send(SPIFFS, "/sucessologin.html", String(), false, processor); 
     else request->send(SPIFFS, "/falhalogin.html", String(), false, processor); 
+    
+    
+    WiFi.disconnect();
+    while (WiFi.status() != WL_DISCONNECTED) 
+    {
+      delay(500);
+      Serial.print("d...");
+    }
+    Serial.println("Status:");
+    Serial.println(WiFi.status());
+    setup_wifi("Leo", "minhasenha");
 
 
   });
