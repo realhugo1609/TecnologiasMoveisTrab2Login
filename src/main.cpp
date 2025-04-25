@@ -6,17 +6,11 @@
 #include "ESPAsyncWebServer.h"
 #include "SPIFFS.h"
 
-// Update these with values suitable for your network.
 
-//const char* ssid = "Leo";
-//const char* password = "minhasenha";
+// Update these with values suitable for your network.
 
 const char* ssid = "LEO308_2G";
 const char* password = "14393018";
-
-//ssid = "LEO308_2G";
-//password = "14393018";
-
 
 const char* mqtt_server = "broker.emqx.io";
 
@@ -36,7 +30,6 @@ unsigned long lastMsg = 0;
 char msg[MSG_BUFFER_SIZE];
 int value = 0;
 
-
 String processor(const String& var)
 {
   Serial.println(var);
@@ -49,7 +42,9 @@ String processor(const String& var)
   return String();
 }
 
-void setup_wifi(const char* ssid, const char* password) {
+//void setup_wifi(const char* ssid, const char* password) {
+void setup_wifi(const String ssid, const String password) {
+
 
   delay(10);
   // We start by connecting to a WiFi network
@@ -121,8 +116,8 @@ void setup() {
   Serial.begin(115200);
   setup_wifi(ssid, password);
 
-  client.setServer(mqtt_server, 1883);
-  client.setCallback(callback);
+  //client.setServer(mqtt_server, 1883);
+  //client.setCallback(callback);
 
 
   // Initialize SPIFFS
@@ -158,8 +153,7 @@ void setup() {
     }
     Serial.println("Status:");
     Serial.println(WiFi.status());
-    setup_wifi("Leo", "minhasenha");
-
+    setup_wifi(l->value(), s->value());
 
   });
   // Route to set GPIO to LOW
@@ -175,6 +169,7 @@ void setup() {
 
 void loop() {
 
+/*
   if (!client.connected()) {
     reconnect();
   }
@@ -189,4 +184,5 @@ void loop() {
     Serial.println(msg);
     client.publish("outTopic", msg);
   }
+*/
 }
