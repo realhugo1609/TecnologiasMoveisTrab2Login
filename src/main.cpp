@@ -140,11 +140,13 @@ void setup() {
     digitalWrite(ledPin, HIGH); 
     AsyncWebParameter* l = request->getParam(0); //LOGIN
     AsyncWebParameter* s = request->getParam(1); //SENHA
+    /*
     if (((l->value() == "hugo") && (s->value() == "1234"))  ||
        ((l->value() == "mikael") && (s->value() == "2025")))  request->send(SPIFFS, "/sucessologin.html", String(), false, processor); 
     else request->send(SPIFFS, "/falhalogin.html", String(), false, processor); 
-    
-    
+    */
+   request->send(SPIFFS, "/index.html", String(), false, processor);
+
     WiFi.disconnect();
     while (WiFi.status() != WL_DISCONNECTED) 
     {
