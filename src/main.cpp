@@ -151,12 +151,12 @@ void setup() {
   Serial.begin(115200);
 
   //PRO SERVO
-	ESP32PWM::allocateTimer(0);
-	ESP32PWM::allocateTimer(1);
-	ESP32PWM::allocateTimer(2);
-	ESP32PWM::allocateTimer(3);
-	myservo.setPeriodHertz(50);    // standard 50 hz servo
-	myservo.attach(servoPin, 1000, 2000); // attaches the servo on pin 18 to the servo object
+  ESP32PWM::allocateTimer(0);
+  ESP32PWM::allocateTimer(1);
+  ESP32PWM::allocateTimer(2);
+  ESP32PWM::allocateTimer(3);
+  myservo.setPeriodHertz(50);    // standard 50 hz servo
+  myservo.attach(servoPin, 1000, 2000); // attaches the servo on pin 18 to the servo object
 
   //MQTT ADICOES
   clientMQTT.setServer(mqtt_server, 1883);
