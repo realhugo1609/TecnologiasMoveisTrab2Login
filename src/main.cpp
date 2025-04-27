@@ -1,8 +1,14 @@
 
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include <ESP32Servo.h>
 
-int flagAntesDepoisLogin = 1;
+//PRO SERVO
+Servo myservo;
+int pos = 0;    
+int servoPin = 18;
+
+int flagAntesDepoisLogin = 1;    //ANTES DO LOGIN (AP) E DEPOIS
 
 // Replace with your network credentials
 const char* ssid     = "ESP32-Access-Point";
@@ -75,6 +81,22 @@ void setup_wifi(const String ssid, const String password)
   flagAntesDepoisLogin = 2; //COMECA O MQTT
 }
 
+void servo180Graus()
+{
+  for (pos = 0; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
+    // in steps of 1 degree
+    myservo.write(pos);    // tell servo to go to position in variable 'pos'
+    delay(15);             // waits 15ms for the servo to reach the position
+  } 
+}
+void servo0Graus()
+{
+  for (pos = 180; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
+    myservo.write(pos);    // tell servo to go to position in variable 'pos'
+    delay(15);             // waits 15ms for the servo to reach the position
+  }
+}
+//CALLBACK DO MQTT
 void callback(char* topic, byte* payload, unsigned int length) 
 {
   Serial.print("Message arrived [");
@@ -85,13 +107,17 @@ void callback(char* topic, byte* payload, unsigned int length)
   }
   Serial.println();
 
-  // Switch on the LED if an 1 was received as first character
-  if ((char)payload[0] == '1') {
+  // Switch on the LED if an 0 was received as first character
+  if ((char)payload[0] == '0') {
+    if (pos >= 180) servo0Graus(); //FOR ACABA LEVANDO pos PARA 181
     //digitalWrite(BUILTIN_LED, LOW);   // Turn the LED on (Note that LOW is the voltage level
     // but actually the LED is on; this is because
     // it is active low on the ESP-01)
-  } else {
+  } else if ((char)payload[0] == '1') {
+    if (pos <= 0) servo180Graus(); //FOR ACABA LEVANDO pos PARA -1
     //digitalWrite(BUILTIN_LED, HIGH);  // Turn the LED off by making the voltage HIGH
+  } else {
+    Serial.println("Não recebi nem 0 nem 1");
   }
 
 }
@@ -120,8 +146,17 @@ void reconnect() {
   }
 }
 
+
 void setup() {
   Serial.begin(115200);
+
+  //PRO SERVO
+	ESP32PWM::allocateTimer(0);
+	ESP32PWM::allocateTimer(1);
+	ESP32PWM::allocateTimer(2);
+	ESP32PWM::allocateTimer(3);
+	myservo.setPeriodHertz(50);    // standard 50 hz servo
+	myservo.attach(servoPin, 1000, 2000); // attaches the servo on pin 18 to the servo object
 
   //MQTT ADICOES
   clientMQTT.setServer(mqtt_server, 1883);
