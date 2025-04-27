@@ -13,6 +13,9 @@ Servo myservo;
 int pos = 0;    
 int servoPin = 18;
 
+//PRO RELE
+#define pinorele 14
+
 int flagAntesDepoisLogin = 1;    //ANTES DO LOGIN (AP) E DEPOIS
 
 // Replace with your network credentials
@@ -131,6 +134,10 @@ void callback(char* topic, byte* payload, unsigned int length)
     barraPercentual = 75;
   } else if ((char)payload[0] == 'E') {
     barraPercentual = 100;
+  } else if ((char)payload[0] == 'F') {
+    digitalWrite(pinorele, LOW);
+  } else if ((char)payload[0] == 'G') {
+    digitalWrite(pinorele, HIGH);
   }
 
 }
@@ -173,6 +180,10 @@ void setup() {
   ESP32PWM::allocateTimer(3);
   myservo.setPeriodHertz(50);    // standard 50 hz servo
   myservo.attach(servoPin, 1000, 2000); // attaches the servo on pin 18 to the servo object
+
+  //PRO RELE
+  pinMode(pinorele, OUTPUT);
+  digitalWrite(pinorele, LOW);
 
   //MQTT ADICOES
   clientMQTT.setServer(mqtt_server, 1883);
@@ -297,7 +308,7 @@ void loop(){
     }
     clientMQTT.loop();
 
-
+    //BARRA DE LED
     if (barraPercentual == 0)
     {
       digitalWrite(pinobarra, LOW);
