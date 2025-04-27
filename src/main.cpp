@@ -3,6 +3,11 @@
 #include <PubSubClient.h>
 #include <ESP32Servo.h>
 
+//PARA BARRA DE LEDS
+#define pinobarra 2
+int barraPercentual = 25;
+long timerBarra = millis();
+
 //PRO SERVO
 Servo myservo;
 int pos = 0;    
@@ -86,14 +91,14 @@ void servo180Graus()
   for (pos = 0; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
     // in steps of 1 degree
     myservo.write(pos);    // tell servo to go to position in variable 'pos'
-    delay(15);             // waits 15ms for the servo to reach the position
+    //delay(15);             // waits 15ms for the servo to reach the position
   } 
 }
 void servo0Graus()
 {
   for (pos = 180; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
     myservo.write(pos);    // tell servo to go to position in variable 'pos'
-    delay(15);             // waits 15ms for the servo to reach the position
+    //delay(15);             // waits 15ms for the servo to reach the position
   }
 }
 //CALLBACK DO MQTT
@@ -116,8 +121,16 @@ void callback(char* topic, byte* payload, unsigned int length)
   } else if ((char)payload[0] == '1') {
     if (pos <= 0) servo180Graus(); //FOR ACABA LEVANDO pos PARA -1
     //digitalWrite(BUILTIN_LED, HIGH);  // Turn the LED off by making the voltage HIGH
-  } else {
-    Serial.println("Não recebi nem 0 nem 1");
+  } else if ((char)payload[0] == 'A') {
+    barraPercentual = 0;
+  } else if ((char)payload[0] == 'B') {
+    barraPercentual = 25;
+  } else if ((char)payload[0] == 'C') {
+    barraPercentual = 50;
+  } else if ((char)payload[0] == 'D') {
+    barraPercentual = 75;
+  } else if ((char)payload[0] == 'E') {
+    barraPercentual = 100;
   }
 
 }
@@ -149,6 +162,9 @@ void reconnect() {
 
 void setup() {
   Serial.begin(115200);
+
+  //PRA BARRA
+  pinMode(pinobarra, OUTPUT);
 
   //PRO SERVO
   ESP32PWM::allocateTimer(0);
@@ -280,6 +296,33 @@ void loop(){
       reconnect();
     }
     clientMQTT.loop();
-  }
+
+
+    if (barraPercentual == 0)
+    {
+      digitalWrite(pinobarra, LOW);
+    } else if (barraPercentual == 25)
+    {
+      if (millis() < timerBarra + 1) digitalWrite(pinobarra, HIGH);
+      else if (millis() < timerBarra + 4) digitalWrite(pinobarra, LOW);
+      else timerBarra = millis();
+    } else if (barraPercentual == 50)
+    {
+      if (millis() < timerBarra + 2) digitalWrite(pinobarra, HIGH);
+      else if (millis() < timerBarra + 4) digitalWrite(pinobarra, LOW);
+      else timerBarra = millis();
+    } else if (barraPercentual == 75)
+    {
+      if (millis() < timerBarra + 3) digitalWrite(pinobarra, HIGH);
+      else if (millis() < timerBarra + 4) digitalWrite(pinobarra, LOW);
+      else timerBarra = millis();
+    } else if (barraPercentual == 100)
+    {
+      digitalWrite(pinobarra, HIGH);
+    }
+
+   
+
+  } //flagAntesDepoisLogin == 2
   
 }
