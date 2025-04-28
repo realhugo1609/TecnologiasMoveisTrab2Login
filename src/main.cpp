@@ -16,6 +16,10 @@ int servoPin = 18;
 //PRO RELE
 #define pinorele 14
 
+//Pra Lampada
+#define pinoLamp 16
+
+
 int flagAntesDepoisLogin = 1;    //ANTES DO LOGIN (AP) E DEPOIS
 
 // Replace with your network credentials
@@ -138,7 +142,12 @@ void callback(char* topic, byte* payload, unsigned int length)
     digitalWrite(pinorele, LOW);
   } else if ((char)payload[0] == 'G') {
     digitalWrite(pinorele, HIGH);
+  } else if ((char)payload[0] == 'L') {
+    digitalWrite(pinoLamp, HIGH);
+  } else if ((char)payload[0] == 'M') {
+    digitalWrite(pinoLamp, LOW);
   }
+
 
 }
 
@@ -184,6 +193,10 @@ void setup() {
   //PRO RELE
   pinMode(pinorele, OUTPUT);
   digitalWrite(pinorele, LOW);
+
+  //PRO LAMP
+  pinMode(pinoLamp, OUTPUT);
+  digitalWrite(pinoLamp, LOW);
 
   //MQTT ADICOES
   clientMQTT.setServer(mqtt_server, 1883);
